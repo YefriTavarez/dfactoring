@@ -39,5 +39,4 @@ def delete_invoice(cdt, cdn):
 
 	d.delete()
 
-	# return get_doc(childdoc.parenttype, childdoc.parent)
 	return childdoc
