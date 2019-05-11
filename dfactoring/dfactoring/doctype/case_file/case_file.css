@@ -1,0 +1,11 @@
+div[data-page-route="Form/Case File"] button[data-fieldname="delete_invoice"] {
+  color: #fff;
+  background-color: #ff5858;
+  border-color: #ff3f3f;
+}
+
+div[data-page-route="Form/Case File"] button[data-fieldname="delete_invoice"]:hover {
+  color: #fff;
+  background-color: #ff2525;
+  border-color: #ff0101;
+}
