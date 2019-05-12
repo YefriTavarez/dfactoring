@@ -45,15 +45,46 @@ frappe.ui.form.on('Party Portfolio', {
 	add_custom_buttons: frm => {
 		$.map([
 			"add_make_invoice_button",
+			"add_randomly_assign_button",
 		], event => frm.trigger(event));
 	},
 	add_make_invoice_button: frm => {
+		if (frm.is_new()) {
+			return false;
+		}
+		
 		const btn = __("Make Invoices"),
-			onclick = event => {
-				frm.trigger("handle_make_invoice_button");
-			};
-
+		onclick = event => {
+			frm.trigger("handle_make_invoice_button");
+		};
+		
 		frm.add_custom_button(btn, onclick);
+	},
+	add_randomly_assign_button: frm => {
+		const { doc } = frm,
+			{ detail } = doc;
+
+		frm.page.add_menu_item(__("Randomly Assignment"), event => {
+			let opts = {
+				method: "dfactoring.api.randomly_assign",
+			};
+			
+            opts.args = {
+				docs: detail.map(row => new Array(row.doctype, row.name)),
+            };
+			
+            opts.callback = function(response) {
+				frm.refresh();
+            };
+			
+
+			if (frm.is_new()) {
+				frappe.throw(__("Please save the document first and then the assignment"))
+				return false;
+			}
+			
+            frappe.call(opts);
+		}, false);
 	},
 	bill_no: frm => {
 		frm.trigger("toggle_reqd_bill_date");

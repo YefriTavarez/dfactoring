@@ -75,7 +75,15 @@ class PartyPortfolio(Document):
 		if not self.company:
 			frappe.throw(_("Please select the Company"))
 
-		for row in self.get("detail", []):
+		if not self.get("detail", []):
+			frappe.throw(_("Please, specify at least one record before"))
+
+		valid_rows = filter(lambda d: not d.invoice, self.get("detail", []))
+
+		if not valid_rows:
+			frappe.throw(_("All the records have a Sales Invoice already"))
+
+		for row in valid_rows:
 			if not row.qty:
 				row.qty = 1.0
 
@@ -280,6 +288,33 @@ class PartyPortfolio(Document):
 		})
 
 		return args
+
+	def on_trashes(self):
+		from frappe import db
+
+		for d in self.get("detail", []):
+			if not d.get("invoice") \
+				or not db.exists("Sales Invoice", d.invoice):
+				continue
+
+			from frappe import _
+			frappe.throw(_("Cannot delete Case File in row {idx} as it is linked with a Sales Invoice") \
+				.format(idx=d.idx))
+
+		values = {
+			"parent": self.name,
+			"parenttype": self.doctype,
+			"parentfield": "detail",
+		}
+
+		db.sql("""
+			Delete From
+				`tabCase File`
+			Where
+				parent = %(parent)s
+				and parenttype = %(parenttype)s
+				and parentfield = %(parentfield)s
+		""", values)
 
 @frappe.whitelist()
 def get_temporary_opening_account(company=None):
