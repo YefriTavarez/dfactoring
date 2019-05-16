@@ -1,0 +1,119 @@
+[
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow", 
+  "document_type": "Case Record", 
+  "is_active": 1, 
+  "modified": "2019-05-11 11:05:57.496066", 
+  "name": "Case Record Workflow", 
+  "override_status": 0, 
+  "states": [
+   {
+    "allow_edit": "Collector User", 
+    "doc_status": "0", 
+    "message": null, 
+    "state": "Abierto", 
+    "update_field": "read_only_form", 
+    "update_value": "0"
+   }, 
+   {
+    "allow_edit": "Collector User", 
+    "doc_status": "0", 
+    "message": null, 
+    "state": "Asignado", 
+    "update_field": null, 
+    "update_value": null
+   }, 
+   {
+    "allow_edit": "Collector User", 
+    "doc_status": "0", 
+    "message": null, 
+    "state": "En Proceso", 
+    "update_field": "", 
+    "update_value": null
+   }, 
+   {
+    "allow_edit": "Collector User", 
+    "doc_status": "0", 
+    "message": "Se esta negociando con el Cliente los honorarios", 
+    "state": "En Negociacion", 
+    "update_field": null, 
+    "update_value": null
+   }, 
+   {
+    "allow_edit": "Collector User", 
+    "doc_status": "0", 
+    "message": null, 
+    "state": "Pagado", 
+    "update_field": "read_only_form", 
+    "update_value": "1"
+   }, 
+   {
+    "allow_edit": "Collector User", 
+    "doc_status": "0", 
+    "message": null, 
+    "state": "Cerrado", 
+    "update_field": "read_only_form", 
+    "update_value": "1"
+   }
+  ], 
+  "transitions": [
+   {
+    "action": "Cerrar", 
+    "allowed": "Collector Manager", 
+    "next_state": "Cerrado", 
+    "state": "Abierto"
+   }, 
+   {
+    "action": "Cerrar", 
+    "allowed": "Collector Manager", 
+    "next_state": "Cerrado", 
+    "state": "En Proceso"
+   }, 
+   {
+    "action": "Cerrar", 
+    "allowed": "Collector Manager", 
+    "next_state": "Cerrado", 
+    "state": "En Negociacion"
+   }, 
+   {
+    "action": "Re-Abrir", 
+    "allowed": "Collector Manager", 
+    "next_state": "Abierto", 
+    "state": "Pagado"
+   }, 
+   {
+    "action": "Asignar", 
+    "allowed": "Collector User", 
+    "next_state": "Asignado", 
+    "state": "Abierto"
+   }, 
+   {
+    "action": "Procesar", 
+    "allowed": "Collector User", 
+    "next_state": "En Proceso", 
+    "state": "Asignado"
+   }, 
+   {
+    "action": "En Negociacion", 
+    "allowed": "Collector User", 
+    "next_state": "En Negociacion", 
+    "state": "En Proceso"
+   }, 
+   {
+    "action": "Marcar como Pagado", 
+    "allowed": "Collector User", 
+    "next_state": "Pagado", 
+    "state": "En Negociacion"
+   }, 
+   {
+    "action": "Re-Abrir", 
+    "allowed": "Collector Manager", 
+    "next_state": "Abierto", 
+    "state": "Cerrado"
+   }
+  ], 
+  "workflow_name": "Case Record Workflow", 
+  "workflow_state_field": "status"
+ }
+]

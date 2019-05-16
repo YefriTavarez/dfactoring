@@ -11,6 +11,107 @@ app_color = "#d9534f"
 app_email = "yefritavarez@tzcode.tech"
 app_license = "General Public License, v3"
 
+# App fixtures
+# ------------
+fixtures = [
+	{
+		"doctype": "Desktop Icon",
+		"filters": {
+			"name": (
+				"in", (
+					"e92608b3e6",
+					"756b70339d",
+					"5144852c4e",
+					"68bf837478",
+					"509fc15288",
+					"2cc83ddf0a",
+				)
+			)
+		},
+	},
+	{
+		"doctype": "Custom Field",
+		"filters": {
+			"name": (
+				"in", (
+					"Sales Invoice-generate_bill_number",
+					"Sales Invoice-bill_date",
+					"Sales Invoice-bill_date_cb",
+					"Sales Invoice-bill_no",
+					"Sales Invoice-tax_receipt_details",
+					"Case Record-status",
+					"Case File-original_amount",
+				)
+			)
+		},
+	},
+	{
+		"doctype": "Workflow State",
+		"filters": {
+			"name": (
+				"in", (
+					"Cerrado",
+					"Pagado",
+					"Asignado",
+					"En Proceso",
+					"En Negociacion",
+					"Abierto",
+				)
+			)
+		},
+	},
+	{
+		"doctype": "Workflow Action",
+		"filters": {
+			"name": (
+				"in", (
+					"Marcar como Pagado",
+					"En Negociacion",
+					"Procesar",
+					"Procesado",
+					"Asignar",
+					"Re-Abrir",
+					"Cerrar",
+				)
+			)
+		},
+	},
+	{
+		"doctype": "Role",
+		"filters": {
+			"name": (
+				"in", (
+					"Collector User",
+					"Collector Manager",
+				)
+			)
+		},
+	},
+	{
+		"doctype": "Property Setter",
+		"filters": {
+			"name": (
+				"in", (
+					"Sales Invoice-read_only_onload",
+					"Workflow Action-allow_rename",
+					"Workflow State-allow_rename",
+					"Case File-read_only_onload",
+				)
+			)
+		},
+	},
+	{
+		"doctype": "Workflow",
+		"filters": {
+			"name": (
+				"in", (
+					"Case Record Workflow",
+				)
+			)
+		},
+	},
+]
+
 # Includes in <head>
 # ------------------
 
@@ -27,7 +128,7 @@ app_license = "General Public License, v3"
 
 # include js in doctype views
 doctype_js = {
-    "Sales Invoice" : "public/js/sales_invoice.js"
+	"Sales Invoice" : "public/js/sales_invoice.js"
 }
 
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}

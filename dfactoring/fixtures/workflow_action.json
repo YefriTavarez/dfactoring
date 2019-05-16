@@ -1,0 +1,51 @@
+[
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2019-05-10 22:19:41.816727", 
+  "name": "Cerrar", 
+  "workflow_action_name": "Cerrar"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2019-05-10 22:20:01.055432", 
+  "name": "Re-Abrir", 
+  "workflow_action_name": "Re-Abrir"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2019-05-10 23:26:04.419188", 
+  "name": "Asignar", 
+  "workflow_action_name": "Asignar"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2019-05-10 23:26:42.592394", 
+  "name": "Procesado", 
+  "workflow_action_name": "Procesado"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2019-05-10 23:26:55.300992", 
+  "name": "Procesar", 
+  "workflow_action_name": "Procesar"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2019-05-10 23:27:51.965894", 
+  "name": "En Negociacion", 
+  "workflow_action_name": "En Negociacion"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow Action", 
+  "modified": "2019-05-10 23:39:29.410619", 
+  "name": "Marcar como Pagado", 
+  "workflow_action_name": "Marcar como Pagado"
+ }
+]

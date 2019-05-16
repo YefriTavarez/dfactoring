@@ -1,0 +1,56 @@
+[
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2019-05-10 22:18:21.936190", 
+  "name": "Abierto", 
+  "style": "Danger", 
+  "workflow_state_name": "Abierto"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2019-05-10 23:43:56.711921", 
+  "name": "Cerrado", 
+  "style": "Inverse", 
+  "workflow_state_name": "Cerrado"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2019-05-10 23:08:59.234766", 
+  "name": "En Negociacion", 
+  "style": "Primary", 
+  "workflow_state_name": "En Negociacion"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2019-05-10 23:19:26.939619", 
+  "name": "En Proceso", 
+  "style": "Primary", 
+  "workflow_state_name": "En Proceso"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2019-05-10 23:43:24.209194", 
+  "name": "Asignado", 
+  "style": "Warning", 
+  "workflow_state_name": "Asignado"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Workflow State", 
+  "icon": "", 
+  "modified": "2019-05-10 23:43:35.508618", 
+  "name": "Pagado", 
+  "style": "Success", 
+  "workflow_state_name": "Pagado"
+ }
+]
