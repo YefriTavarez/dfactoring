@@ -9,6 +9,7 @@ def get_data():
 			"color": "#d9534f",
 			"icon": "fa fa-microchip",
 			"type": "module",
-			"label": _("DFactoring")
+			"label": _("DFactoring"),
+			"hidden": True
 		}
 	]
