@@ -25,6 +25,8 @@ class PartyPortfolio(Document):
 			# all missing party are to be created or linked
 			self.create_customer_if_not_exists(d)
 
+		self.calculate_taxes_and_totals()
+
 	def get_opening_invoice_summary(self):
 		def prepare_invoice_summary(doctype, invoices):
 			# add company wise sales / purchase invoice summary
@@ -288,6 +290,18 @@ class PartyPortfolio(Document):
 		})
 
 		return args
+
+	def calculate_taxes_and_totals(self):
+		from frappe.utils import flt
+
+		total_taxes, total_amount = [.000] * 2
+
+		for d in self.get("detail", []):
+			total_taxes += flt(d.tax_amount)
+			total_amount += flt(d.grand_total)
+
+		self.total_taxes = total_taxes
+		self.total_amount = total_amount
 
 	def on_trashes(self):
 		from frappe import db

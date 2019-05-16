@@ -38,7 +38,6 @@ fixtures = [
 					"Sales Invoice-bill_no",
 					"Sales Invoice-tax_receipt_details",
 					"Case Record-status",
-					"Case File-original_amount",
 				)
 			)
 		},
