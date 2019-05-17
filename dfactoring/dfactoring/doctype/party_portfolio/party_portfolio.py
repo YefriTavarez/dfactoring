@@ -4,9 +4,11 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe import _, scrub
-from frappe.utils import flt, nowdate
+
 from frappe.model.document import Document
+
+from frappe import db, scrub, _
+from frappe.utils import flt, nowdate
 
 class PartyPortfolio(Document):
 	def onload(self):
@@ -70,8 +72,8 @@ class PartyPortfolio(Document):
 		return invoices_summary, max_count
 
 	def make_invoices(self):
-		from frappe import db
 		names = []
+		
 		mandatory_error_msg = _("Row {idx}: {field} is required to create the Opening Sales Invoices")
 
 		if not self.company:
@@ -223,8 +225,8 @@ class PartyPortfolio(Document):
 
 	def get_invoice_dict(self, row=None):
 		def get_item_dict():
-			default_uom = frappe.db.get_single_value("Stock Settings", "stock_uom") or _("Nos")
-			cost_center = frappe.db.get_value("Company", self.company, "cost_center")
+			default_uom = db.get_single_value("Stock Settings", "stock_uom") or _("Nos")
+			cost_center = db.get_value("Company", self.company, "cost_center")
 			if not cost_center:
 				frappe.throw(
 					_("Please set the Default Cost Center in {0} company").format(frappe.bold(self.company))

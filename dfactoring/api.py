@@ -5,6 +5,9 @@
 from __future__ import unicode_literals
 import frappe
 
+from frappe import db, scrub, _
+from frappe.utils import flt, nowdate
+
 @frappe.whitelist()
 def generate_new_bill_no(serie, company, doctype, name):
 	"""
@@ -25,7 +28,7 @@ def generate_new_bill_no(serie, company, doctype, name):
 
 	invoice_doc.bill_no = tax_doc.get_next_value()
 	invoice_doc.bill_date = nowdate()
-	
+
 	invoice_doc.add_comment("Edit", _("Tax Receipt was assigned by {}") \
 		.format(bold(get_fullname())))
 
@@ -88,7 +91,7 @@ def randomly_assign(docs):
 	from frappe import get_all, bold, _
 
 	collector_users = [d.user for d in \
-		get_all("Case Record Settings User", 
+		get_all("Case Record Settings User",
 			fields=["user"])]
 
 	import random
@@ -115,3 +118,60 @@ def randomly_assign(docs):
 		})
 
 		idx += 1
+
+@frappe.whitelist()
+def get_mapped_purchase_invoice(source_name, target_doc=None):
+	from frappe import _
+	from frappe.model.mapper import get_mapped_doc
+
+	source_doctype, target_doctype = \
+		"Party Portfolio", "Purchase Invoice"
+
+	if not target_doc:
+		target_doc = frappe.new_doc(target_doctype)
+
+	def postprocess(source, target):
+		from \
+			.dfactoring \
+			.doctype \
+			.party_portfolio \
+			.party_portfolio \
+		import \
+			get_temporary_opening_account \
+		as get_temp_acc
+
+		default_uom = db.get_single_value("Stock Settings", "stock_uom") or _("Nos")
+		cost_center = db.get_value("Company", source.company, "cost_center")
+
+		target.append("items", {
+			"doctype": "Purchase Invoice Item",
+			"parenttype": "Purchase Invoice",
+			"parentfield": "items",
+			"rate": source.total_amount,
+			"amount": source.total_amount,
+			"qty": 1,
+			"conversion_factor": 1,
+			"uom": default_uom,
+			"cost_center": cost_center,
+			"item_name": _("Opening Invoice Item"),
+			"description": _("Opening Invoice Item"),
+			"expense_account": get_temp_acc(source.company),
+		})
+
+		# target.run_method("calculate_taxes_and_totals")
+
+	doc = get_mapped_doc(source_doctype, source_name, {
+		source_doctype: {
+			"doctype": target_doctype,
+			"field_map": {
+				"name": "party_portfolio",
+			},
+			"condition": lambda d: doc.docstatus == 1
+		},
+		"Purchase Taxes and Charges": {
+			"doctype": "Purchase Taxes and Charges",
+			"add_if_empty": True
+		}
+	}, target_doc, postprocess)
+
+	return doc

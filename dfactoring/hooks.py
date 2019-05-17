@@ -19,12 +19,13 @@ fixtures = [
 		"filters": {
 			"name": (
 				"in", (
+					"Case Record-status",
 					"Sales Invoice-generate_bill_number",
 					"Sales Invoice-bill_date",
 					"Sales Invoice-bill_date_cb",
 					"Sales Invoice-bill_no",
 					"Sales Invoice-tax_receipt_details",
-					"Case Record-status",
+					"Purchase Invoice-party_portfolio",
 				)
 			)
 		},

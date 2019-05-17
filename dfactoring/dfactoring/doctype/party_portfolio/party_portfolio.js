@@ -44,21 +44,47 @@ frappe.ui.form.on('Party Portfolio', {
 	},
 	add_custom_buttons: frm => {
 		$.map([
-			"add_make_invoice_button",
+			"add_make_sales_invoice_button",
+			"add_make_purchase_invoice_button",
+			"add_view_purchase_invoice_button",
 			"add_randomly_assign_button",
 		], event => frm.trigger(event));
+
+		frm.page.set_inner_btn_group_as_primary(__("Create"));
 	},
-	add_make_invoice_button: frm => {
-		if (frm.is_new()) {
+	add_make_sales_invoice_button: frm => {
+		if (frm.doc.docstatus != 1) {
 			return false;
 		}
-		
-		const btn = __("Make Invoices"),
+
+		const btn = __("Sales Invoices"),
 		onclick = event => {
 			frm.trigger("handle_make_invoice_button");
 		};
-		
-		frm.add_custom_button(btn, onclick);
+
+		frm.add_custom_button(btn, onclick, __("Create"));
+	},
+	add_make_purchase_invoice_button: frm => {
+		if (frm.doc.docstatus != 1) {
+			return false;
+		}
+
+		const btn = __("Purchase Invoice"),
+		onclick = event => {
+			frm.trigger("handle_make_purchase_invoice");
+		};
+
+		frm.add_custom_button(btn, onclick, __("Create"));
+	},
+	handle_make_purchase_invoice: frm => {
+		frappe.model.open_mapped_doc({
+			method: "dfactoring.api.get_mapped_purchase_invoice",
+			frm: frm,
+			run_link_triggers: true,
+		});
+	},
+	add_view_purchase_invoice_button: frm => {
+
 	},
 	add_randomly_assign_button: frm => {
 		const { doc } = frm,
@@ -68,21 +94,21 @@ frappe.ui.form.on('Party Portfolio', {
 			let opts = {
 				method: "dfactoring.api.randomly_assign",
 			};
-			
+
             opts.args = {
 				docs: detail.map(row => new Array(row.doctype, row.name)),
             };
-			
+
             opts.callback = function(response) {
 				frm.refresh();
             };
-			
+
 
 			if (frm.is_new()) {
 				frappe.throw(__("Please save the document first and then the assignment"))
 				return false;
 			}
-			
+
             frappe.call(opts);
 		}, false);
 	},
