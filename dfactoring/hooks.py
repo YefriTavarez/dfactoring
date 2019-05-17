@@ -17,14 +17,8 @@ fixtures = [
 	{
 		"doctype": "Desktop Icon",
 		"filters": {
-			"name": (
-				"in", (
-					"e92608b3e6",
-					"756b70339d",
-					"5144852c4e",
-					"68bf837478",
-				)
-			)
+			"app": "dfactoring",
+			"standard": True,
 		},
 	},
 	{
