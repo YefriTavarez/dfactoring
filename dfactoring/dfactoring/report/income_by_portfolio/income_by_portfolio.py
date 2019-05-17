@@ -1,4 +1,4 @@
-# Copyright (c) 2013, Yefri Tavarez and contributors
+# Copyright (c) 2019, Yefri Tavarez and contributors
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
@@ -12,6 +12,7 @@ def get_columns(filters=None):
 	from frappe import _
 	return [
 		_("Portfolio") + ":Link/Party Portfolio:100",
+		_("Supplier") + ":Link/Supplier:180",
 		_("Invoice") + ":Link/Sales Invoice:100",
 		_("Customer") + ":Link/Customer:180",
 		_("Posting") + " Date:Date:100",
@@ -29,6 +30,7 @@ def get_data(filters=None):
 	return db.sql("""
 		Select
 			`tabParty Portfolio`.name As portfolio,
+			`tabParty Portfolio`.supplier As supplier,
 			`tabSales Invoice`.name As invoice,
 			`tabSales Invoice`.customer,
 			`tabSales Invoice`.posting_date,
@@ -47,17 +49,18 @@ def get_data(filters=None):
 		Inner Join
 			`tabParty Portfolio`
 			On
-			`tabCase File`.parent = `tabParty Portfolio`.name
+				`tabCase File`.parent = `tabParty Portfolio`.name
 			And `tabCase File`.parenttype = "Party Portfolio"
 			And `tabCase File`.parentfield = "detail"
 		Inner Join
 			`tabSales Invoice`
 			On
-			`tabCase File`.invoice = `tabSales Invoice`.name
+				`tabCase File`.invoice = `tabSales Invoice`.name
+				And `tabCase File`.docstatus = `tabSales Invoice`.docstatus
 		Where
 			{conditions}
 	""".format(conditions=conditions), 
-	filters, debug=True)
+	filters, debug=False)
 
 def get_conditions(filters=None):
 	conditions = ["`tabSales Invoice`.`docstatus` = 1"]
@@ -67,5 +70,8 @@ def get_conditions(filters=None):
 
 	if filters.get("portfolio"):
 		conditions += ["`tabParty Portfolio`.`name` = %(portfolio)s"]
+
+	if filters.get("supplier"):
+		conditions += ["`tabParty Portfolio`.`supplier` = %(supplier)s"]
 
 	return " And ".join(conditions)

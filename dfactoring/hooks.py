@@ -15,13 +15,6 @@ app_license = "General Public License, v3"
 # ------------
 fixtures = [
 	{
-		"doctype": "Desktop Icon",
-		"filters": {
-			"app": "dfactoring",
-			"standard": True,
-		},
-	},
-	{
 		"doctype": "Custom Field",
 		"filters": {
 			"name": (

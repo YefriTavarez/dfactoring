@@ -18,9 +18,25 @@
 			},
 			{
 				fieldtype: "Link",
+				fieldname: "supplier",
+				options: "Supplier",
+				label: __("Supplier"),
+			},
+			{
+				fieldtype: "Link",
 				fieldname: "portfolio",
-				options: "Portfolio",
-				label: __("Portfolio"),
+				options: "Party Portfolio",
+				label: __("Party Portfolio"),
+				get_query: event => {
+					const { query_report_filters_by_name } = frappe,
+					{ supplier } = query_report_filters_by_name;
+
+					return {
+						filters: {
+							supplier: supplier.value,
+						}
+					};
+				}
 			},
 		]
 	};	
