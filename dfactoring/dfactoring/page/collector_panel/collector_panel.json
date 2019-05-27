@@ -1,0 +1,31 @@
+{
+ "content": null, 
+ "creation": "2019-05-22 21:37:01.740003", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "icon": "fa fa-wpforms", 
+ "idx": 0, 
+ "modified": "2019-05-22 21:37:42.590086", 
+ "modified_by": "Administrator", 
+ "module": "DFactoring", 
+ "name": "collector-panel", 
+ "owner": "Administrator", 
+ "page_name": "Collector Panel", 
+ "restrict_to_domain": "Services", 
+ "roles": [
+  {
+   "role": "System Manager"
+  }, 
+  {
+   "role": "Collector Manager"
+  }, 
+  {
+   "role": "Collector User"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "system_page": 0, 
+ "title": "Collector Panel"
+}

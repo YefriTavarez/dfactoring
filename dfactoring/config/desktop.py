@@ -53,4 +53,13 @@ def get_data():
 			"label": _("Income by Portfolio"),
 			"link": "query-report/Income by Portfolio",
 		},
+		{
+			"module_name": "Collector Panel",
+			"_doctype": "Party Portfolio",
+			"color": "#98d85b",
+			"icon": "fa fa-wpforms",
+			"type": "link",
+			"label": _("Collector Panel"),
+			"link": "collector-panel",
+		},
 	]

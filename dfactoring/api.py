@@ -175,3 +175,40 @@ def get_mapped_purchase_invoice(source_name, target_doc=None):
 	}, target_doc, postprocess)
 
 	return doc
+
+@frappe.whitelist()
+def get_customer_phones(customer):
+	from frappe import db
+
+	return db.sql_list("""
+		Select
+			phone_number
+		From
+			`tabCustomer Phones`
+		Where
+			parent = %s
+			And parentfield = "customer_phones"
+			And parenttype = "Customer"
+	""", customer)
+
+@frappe.whitelist()
+def get_case_records(case_file):
+	from frappe import db
+
+	return db.sql("""
+		Select
+			`tabCase Record`.activity_type,
+			`tabCase Record`.activity_option,
+			`tabCase Record`.notes,
+			`tabCase Record`.contact_mean
+		From
+			`tabCase Record`
+		Where
+			`tabCase Record`.reference_type = "Case File"
+			And `tabCase Record`.reference_name = %s
+	""", case_file, as_dict=True)
+
+@frappe.whitelist()
+def get_party_account_currency(party_type, party, company):
+	from erpnext.accounts.party import get_party_account_currency
+	return get_party_account_currency(party_type, party, company)

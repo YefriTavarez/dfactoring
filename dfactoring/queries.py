@@ -20,10 +20,10 @@ def user_query(doctype, txt, searchfield, start, page_len, filters):
 
 	txt = "%{}%".format(txt)
 	return frappe.db.sql("""
-		SELECT 
-			`tabUser`.`name`, 
+		SELECT
+			`tabUser`.`name`,
 			Concat_Ws(' ', first_name, middle_name, last_name)
-		From 
+		From
 			`tabUser`
 		Inner Join
 			`tabHas Role`
@@ -51,3 +51,43 @@ def user_query(doctype, txt, searchfield, start, page_len, filters):
 			key=searchfield, mcond=get_match_cond(doctype)),
 			dict(start=start, page_len=page_len, txt=txt,
 			standard_users=STANDARD_USERS))
+
+def get_case_record_query(doctype, txt, searchfield, start, page_len, filters):
+	from frappe.desk.reportview import get_match_cond
+
+	txt = "%{}%".format(txt)
+	return frappe.db.sql("""
+		SELECT
+			`tabCase File`.`name` as case_id,
+			`tabCustomer`.`name`,
+			`tabCustomer`.`customer_name`,
+			`tabCustomer`.`tax_id`
+		From
+			`tabCustomer`
+		Inner Join
+			`tabCase File`
+			On
+				`tabCustomer`.name = `tabCase File`.customer
+		Where
+			(
+				`tabCustomer`.{key} Like %(txt)s
+					Or `tabCustomer`.`name` Like %(txt)s
+					Or `tabCustomer`.`tax_id` Like %(txt)s
+					Or `tabCustomer`.`customer_name` Like %(txt)s
+					Or `tabCase File`.`name` Like %(txt)s
+			) {mcond}
+		Group By
+			`tabCustomer`.name
+		Order By
+			`tabCustomer`.name asc
+		Limit %(page_len)s Offset %(start)s""".format(
+			key=searchfield, mcond=get_match_cond(doctype)),
+			dict(start=start, page_len=page_len, txt=txt))
+
+
+
+# Case When `tabCustomer`.`name` Like %(txt)s Then 0 Else 1 End,
+# Case When `tabCustomer`.`tax_id` Like %(txt)s Then 0 Else 1 End,
+# Case When `tabCustomer`.`customer_name` Like %(txt)s Then 0 Else 1 End,
+# Case When `tabCase File`.`case_id` Like %(txt)s Then 0 Else 1 End,
+# 	Then 0 Else 1 End,
