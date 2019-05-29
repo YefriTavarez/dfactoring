@@ -4,8 +4,9 @@
 frappe.provide("dfactoring");
 
 class Menu {
-	constructor(page) {
-		this.setup(page);
+	constructor(frm) {
+		this.frm = frm;
+		this.setup(frm.page);
 	}
 
 	setup(page) {
@@ -18,16 +19,21 @@ class Menu {
 			() => this.show_menu(),
 		]);
 	}
-
+	
 	add_std_menu_items() {
-		const { page } = this;
-
-		$.each({
-			"Greet": this.handle_greet,
-		}, (label, action) => {
-			page.add_menu_item(__(label),
-				action, true);
+		$.map([
+			"add_show_pending_tasks",
+		], method => {
+			this[method]();
 		});
+	}
+
+	add_show_pending_tasks() {
+		const { page } = this;
+		
+		page.add_menu_item(__("Today's Pendings"), event => {
+			this.show_todays_pendings();
+		}, false);
 	}
 
 	show_menu() {
@@ -36,10 +42,156 @@ class Menu {
 		page.show_menu();
 	}
 
-	handle_greet(event) {
-		console.log(event);
+	show_todays_pendings(event) {
+		const { frm } = this;
+		
+		frm.call("fetch_daily_reminders", {
+			// pass
+		}, response => {
+			const {
+				message = [],
+			} = response;
+			
+			if (message) {
+				this.render_pendings_table(message);
+			}
+		});
+		
+		this.prompt = new ShowTodaysPendingsPrompt(frm);
+		window["showtodayspendingsprompt"] = this.prompt;
+	}
 
-		frappe.msgprint(__("Hello there!"))
+	render_pendings_table(rows) {
+		const { model } = frappe,
+			{ unscrub } = model,
+			{ prompt } = this,
+			ignore_list = [
+				"name",
+				"activity_type",
+				"activity_option",
+				"status",
+				"next_contact_mean",
+				"reference_type",
+				"reference_name",
+			];
+
+		if (isempty(rows)) {
+			return false;
+		}
+
+		let container = new Container(prompt.get_parent_table());
+		let table = new Table(container);
+		let theader = new TableHeader(table);
+		let tbody = new TableBody(table);
+		
+		let trow = new TableRow(theader);
+
+		for (const label in rows[0]) {
+			if (ignore_list.includes(label)) {
+				continue;
+			}
+
+			new TableHeaderCell(trow, 
+				unscrub(label));
+		}
+
+		new TableHeaderCell(trow, __("Actions"));
+
+		$.map(rows, row => {
+			let trow = new TableRow(tbody);
+
+			const {
+				name,
+				reference_type,
+				reference_name,
+				activity_type,
+				activity_option,
+				notes,
+				next_contact_mean,
+			} = row;
+
+			$.map(row, (value, label) => {
+				if (ignore_list.includes(label)) {
+					return false;
+				}
+
+				new TableBodyCell(trow, value);
+			});
+			
+			const btn_group = 
+				new ButtonGroup(trow.element, event => {
+					// do nothing
+				}, __("Actions"));
+
+			let loadbtn = new Button(btn_group.element, __("Load"), event => {
+				if (reference_type != "Case File") {
+					return false;
+				}
+
+				this.prompt.hide();
+
+				this.frm.set_value("record",
+					reference_name);
+
+			}, "btn btn-default btn-sm btn-close");
+			
+			
+			new Button(btn_group.element, __("View"), event => {
+
+				frappe.msgprint(`
+					<h2>${__("Record Detail")}</h2>
+					<table class="table table-striped">
+					<tr>
+						<td><b>${ __("Activity Type") }</b></td>
+						<td>${activity_type}</td>
+					</tr>
+					<tr>
+						<td><b>${ __("Activity Option") }</b></td>
+						<td>${activity_option}</td>
+					</tr>
+					<tr>
+						<td><b>${ __("Notes") }</b></td>
+						<td>${notes}</td>
+					</tr>
+					<tr>
+						<td><b>${ __("Next Contact Mean") }</b></td>
+						<td>${next_contact_mean}</td>
+					</tr>
+				</table>`, __("More Info"));
+			}, "btn btn-primary btn-sm");
+
+			let closebtn = new Button(btn_group.element, __("Close"), event => {
+				let { target } = event;
+				
+				frappe.db.set_value("Case Record", 
+					name, "status", __("Closed"));
+
+				get(target)
+					.hide();
+					
+				get("button.btn.btn-danger.btn-sm.btn-open")
+					.show();
+			}, "btn btn-success btn-sm btn-close");
+
+			let reopenbtn = new Button(btn_group.element, __("Re-Open"), event => {
+				let { target } = event;
+				
+				frappe.db.set_value("Case Record", 
+					name, "status", __("Open"));
+
+				get(target)
+					.hide();
+
+				get("button.btn.btn-success.btn-sm.btn-close")
+					.show();
+
+			}, "btn btn-danger btn-sm btn-open");
+
+			closebtn.toggle_display(row.status != __("Closed"));
+			reopenbtn.toggle_display(row.status == __("Closed"));
+
+			new TableBodyCell(trow, btn_group);
+		});
 	}
 }
 
@@ -64,18 +216,18 @@ class Menu {
 //     }
 // }, "fa fa-refresh", __("Reloading"));
 
-$(dfactoring.page.page_form)
-	.append(`<div class="container-fluid"></div>`);
+// $(dfactoring.page.page_form)
+// 	.append(`<div class="container-fluid"></div>`);
 
-frappe.ui.form.make_control({
-	parent: $(dfactoring.page.page_form).find(".container-fluid"),
-	df: {
-		fieldtype: "Link",
-		fieldname: "customer",
-		options: "Customer",
-		label: "Customer",
-    },
-	render_input: true,
-});
+// frappe.ui.form.make_control({
+// 	parent: $(dfactoring.page.page_form).find(".container-fluid"),
+// 	df: {
+// 		fieldtype: "Link",
+// 		fieldname: "customer",
+// 		options: "Customer",
+// 		label: "Customer",
+//     },
+// 	render_input: true,
+// });
 
-dfactoring.page.show_form();
+// dfactoring.page.show_form();

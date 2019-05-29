@@ -130,7 +130,14 @@ class QuickPaymentEntryPrompt {
 				prompt.get_field("paid_amount");
 
 		paid_amount_field.df.change = event => {
-			if (paid_amount_field.get_value() > this.frm.doc.outstanding_amount) {
+			const { frm } = this,
+				{ doc } = frm;
+
+			if (
+				paid_amount_field.get_value() 
+					> flt(doc.invoice_outstanding_amount)
+			) {
+
 				paid_amount_field.set_value("");
 
 				frappe.msgprint({
@@ -182,11 +189,11 @@ class QuickPaymentEntryPrompt {
 
 	toggle_required(reqd) {
 		const { prompt } = this,
-			reference_date_field =
-				prompt.get_field("reference_date"),
-				
-			reference_no_field = 
-				prompt.get_field("reference_no");
+		reference_date_field =
+			prompt.get_field("reference_date"),
+			
+		reference_no_field = 
+			prompt.get_field("reference_no");
 
 		$.map([
 			reference_date_field,
@@ -220,11 +227,18 @@ class QuickPaymentEntryPrompt {
 			const { docs } = response;
 
 			if (docs) {
-				frappe.alert({
+				frappe.show_alert({
 					message: __("Payment Entry has been created"),
 					indicator: "green",
 				});
 			}
+
+			$.map([
+				"invoice",
+				"update_outstanding_amount",
+			], event => {
+				frm.trigger(event);
+			});
 		});
 	}
 }

@@ -60,6 +60,6 @@ def get_data():
 			"icon": "fa fa-wpforms",
 			"type": "link",
 			"label": _("Collector Panel"),
-			"link": "collector-panel",
+			"link": "#Form/Collector Panel",
 		},
 	]

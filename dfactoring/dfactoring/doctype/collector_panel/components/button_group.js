@@ -34,11 +34,18 @@ function ButtonGroup(parent, action, aria_label) {
 	element
 		.appendTo(get(parent));
 
+	if ("children" in parent) {
+		if (isarray(parent.children)) {
+			parent.children.push(this);
+		}
+	}
+
 	{
 		// remember args
 
 		this.parent = parent;
 		this.action = action;
+		this.children = [];
 		this.aria_label = aria_label;
 		this.element = element;
 	}

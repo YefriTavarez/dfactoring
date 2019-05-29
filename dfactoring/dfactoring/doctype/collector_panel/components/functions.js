@@ -7,4 +7,10 @@ const create = get = $,
 	isset = value => !! value,
 	hasvalue = value => !! value,
 	isntset = value => ! value,
-	hasnovalue = value => ! value;
+	isempty = value => ! value.length,
+	isntempty = value => !! value.length,
+	hasany = value => !! value.length,
+	hasnovalue = value => ! value,
+	isarray = $.isArray,
+	isfunc = $.isFuntion
+	;

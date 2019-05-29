@@ -7,15 +7,19 @@ frappe.ui.form.on("Collector Panel", {
 	refresh: frm => {
 		frm.trigger("run_refresh_methods");
 	},
-	refresh: frm => {
+	run_refresh_methods: frm => {
 		$.map([
 			"add_fetches",
 			"add_custom_buttons",
 			"set_queries",
-			"disable_save"
+			"disable_save",
+			"show_menu",
 		], event => {
 			frm.trigger(event);
 		});
+	},
+	show_menu: frm => {
+		frm.menu = new Menu(frm);
 	},
 	record: frm => {
 		const { dashboard, doc } = frm;
@@ -167,6 +171,29 @@ frappe.ui.form.on("Collector Panel", {
 		}, (source, target) => {
 			frm.add_fetch("record", source, target);
 		});
+	},
+	invoice: frm => {
+		const { doc } = frm;
+
+		if (doc.invoice) {
+			// get_value(doctype, fieldname, filters=None, as_dict=True, debug=False, parent=None)
+			frappe.call({
+				method: "frappe.client.get_value",
+				args: {
+					doctype: "Sales Invoice",
+					fieldname: "outstanding_amount",
+					filters: doc.invoice
+				},
+				callback: response => {
+					const { message } = response;
+
+					if (message) {
+						frm.set_value("invoice_outstanding_amount",
+							message["outstanding_amount"]);
+					}
+				}
+			})
+		}
 	},
 	render_log_table: frm => {
 		const { doc } = frm;

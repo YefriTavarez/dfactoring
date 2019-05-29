@@ -39,15 +39,33 @@ function Button(parent, label, action, cssclass) {
 	element
 		.appendTo(get(parent));
 
+	if ("children" in parent) {
+		if (isarray(parent.children)) {
+			parent.children.push(this);
+		}
+	}
+
 	{
 		// remember args
 
 		this.parent = parent;
 		this.cssclass = cssclass;
 		this.label = label;
+		this.children = [];
 		this.action = action;
 		this.element = element;
 	}
+
+	
+    this.toggle_display = show => {
+        let { element } = this;
+        
+        if (show) {
+            element.show();
+        } else {
+            element.hide();
+        }
+    };
 
 	return this;
 }
