@@ -20,11 +20,16 @@ fixtures = [
 			"name": (
 				"in", (
 					"Case Record-status",
+					"Customer-customer_phones",
+					"Customer-section_break_18",
+					"Customer-customer_reference",
+					"Customer-customer_references_sb",
 					"Sales Invoice-generate_bill_number",
 					"Sales Invoice-bill_date",
 					"Sales Invoice-bill_date_cb",
 					"Sales Invoice-bill_no",
 					"Sales Invoice-tax_receipt_details",
+					"Sales Invoice-case_file",
 					"Purchase Invoice-party_portfolio",
 				)
 			)
@@ -81,6 +86,7 @@ fixtures = [
 					"Workflow Action-allow_rename",
 					"Workflow State-allow_rename",
 					"Case File-read_only_onload",
+					"Template Importer-skip_errors-description",
 				)
 			)
 		},

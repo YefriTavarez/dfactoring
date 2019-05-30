@@ -16,7 +16,7 @@ frappe.listview_settings["Case File"] = {
             };
 
             if (!checked_items.length) {
-                frappe.throw(__("Please select the items to be assign"))
+                frappe.throw(__("Please select the items to be assigned"))
             }
 
             frappe.call(opts);

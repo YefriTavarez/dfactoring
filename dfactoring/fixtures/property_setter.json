@@ -61,10 +61,27 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocType", 
   "field_name": null, 
-  "modified": "2019-05-11 17:16:56.808135", 
+  "modified": "2019-05-30 12:56:04.848725", 
   "name": "Sales Invoice-read_only_onload", 
   "property": "read_only_onload", 
   "property_type": "Check", 
   "value": null
+ }, 
+ {
+  "_assign": null, 
+  "_comments": null, 
+  "_liked_by": null, 
+  "_user_tags": null, 
+  "default_value": null, 
+  "doc_type": "Template Importer", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "skip_errors", 
+  "modified": "2019-05-30 14:31:16.078848", 
+  "name": "Template Importer-skip_errors-description", 
+  "property": "description", 
+  "property_type": "Text", 
+  "value": "If this is checked, rows with valid data will be imported and invalid rows will be dumped into a new file for you to import later."
  }
 ]
