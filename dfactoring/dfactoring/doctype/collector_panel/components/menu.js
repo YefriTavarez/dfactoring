@@ -19,7 +19,7 @@ class Menu {
 			() => this.show_menu(),
 		]);
 	}
-	
+
 	add_std_menu_items() {
 		$.map([
 			"add_show_pending_tasks",
@@ -30,7 +30,7 @@ class Menu {
 
 	add_show_pending_tasks() {
 		const { page } = this;
-		
+
 		page.add_menu_item(__("Today's Pendings"), event => {
 			this.show_todays_pendings();
 		}, false);
@@ -44,19 +44,19 @@ class Menu {
 
 	show_todays_pendings(event) {
 		const { frm } = this;
-		
+
 		frm.call("fetch_daily_reminders", {
 			// pass
 		}, response => {
 			const {
 				message = [],
 			} = response;
-			
+
 			if (message) {
 				this.render_pendings_table(message);
 			}
 		});
-		
+
 		this.prompt = new ShowTodaysPendingsPrompt(frm);
 		window["showtodayspendingsprompt"] = this.prompt;
 	}
@@ -83,7 +83,7 @@ class Menu {
 		let table = new Table(container);
 		let theader = new TableHeader(table);
 		let tbody = new TableBody(table);
-		
+
 		let trow = new TableRow(theader);
 
 		for (const label in rows[0]) {
@@ -91,7 +91,7 @@ class Menu {
 				continue;
 			}
 
-			new TableHeaderCell(trow, 
+			new TableHeaderCell(trow,
 				unscrub(label));
 		}
 
@@ -117,8 +117,8 @@ class Menu {
 
 				new TableBodyCell(trow, value);
 			});
-			
-			const btn_group = 
+
+			const btn_group =
 				new ButtonGroup(trow.element, event => {
 					// do nothing
 				}, __("Actions"));
@@ -133,9 +133,14 @@ class Menu {
 				this.frm.set_value("record",
 					reference_name);
 
+				setTimeout(event => {
+					this.frm.fields_dict.record
+						.validate(reference_name);
+				}, 200);
+
 			}, "btn btn-default btn-sm btn-close");
-			
-			
+
+
 			new Button(btn_group.element, __("View"), event => {
 
 				frappe.msgprint(`
@@ -162,21 +167,21 @@ class Menu {
 
 			let closebtn = new Button(btn_group.element, __("Close"), event => {
 				let { target } = event;
-				
-				frappe.db.set_value("Case Record", 
+
+				frappe.db.set_value("Case Record",
 					name, "status", __("Closed"));
 
 				get(target)
 					.hide();
-					
+
 				get("button.btn.btn-danger.btn-sm.btn-open")
 					.show();
 			}, "btn btn-success btn-sm btn-close");
 
 			let reopenbtn = new Button(btn_group.element, __("Re-Open"), event => {
 				let { target } = event;
-				
-				frappe.db.set_value("Case Record", 
+
+				frappe.db.set_value("Case Record",
 					name, "status", __("Open"));
 
 				get(target)

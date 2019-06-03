@@ -16,8 +16,10 @@ class OriginalCaseFile(Document):
 		# all missing party are to be created or linked
 		self.create_customer_if_not_exists()
 
-		self.make_invoice()
+		invoice_name = self.make_invoice()
 		# self.calculate_taxes_and_totals()
+
+		self.create_or_update_case_file(invoice_name)
 
 	def get_opening_invoice_summary(self):
 		def prepare_invoice_summary(doctype, invoices):
@@ -61,14 +63,11 @@ class OriginalCaseFile(Document):
 
 		return invoices_summary, max_count
 
-	def after_invoice(self):
+	def after_insert(self):
 		self.make_invoice()
 
 	def make_invoice(self):
-		names = []
-
 		if self.is_new():
-			frappe.errprint("is_new=True")
 			return False
 
 		invoice_doctype = "Sales Invoice"
@@ -131,17 +130,7 @@ class OriginalCaseFile(Document):
 		
 		doc.submit()
 
-		names.append(doc.name)
-
-		# frappe.publish_realtime(
-		# 	"progress", dict(
-		# 		progress=[row.idx, len(self.detail)],
-		# 		title=_('Creating {0}').format(doc.doctype)
-		# 	),
-		# 	user=frappe.session.user
-		# )
-
-		return names
+		return doc.name
 
 	def validate_bill_info(self):
 		"""Not Implemented"""
@@ -151,6 +140,72 @@ class OriginalCaseFile(Document):
 		if cstr(self.get("bill_no")) \
 			and not cstr(self.get("bill_date")):
 			frappe.throw(_("Bill Date is required if Bill No is provided"))
+
+	def create_or_update_case_file(self, invoice_name):
+		if self.is_new():
+			return False
+		
+		case_file_filters = {
+			"original_case_file": self.name,
+			"docstatus": ["=", "1"],
+		}
+
+		target_doctype = "Case File"
+
+		doc = frappe.new_doc(target_doctype)
+
+		if db.exists(target_doctype, 
+			case_file_filters):
+			olddoc = frappe.get_doc(target_doctype, 
+				case_file_filters)
+			
+			olddoc.flags.ignore_mandatory = True
+			olddoc.flags.ignore_permissions = True
+
+			olddoc.cancel()
+			doc = frappe.copy_doc(olddoc)
+			
+			doc.docstatus = 0
+			
+			doc.set_docstatus()
+			
+			doc.amended_from = olddoc.name
+
+			doc.__islocal = True
+
+		from frappe.model.mapper import get_mapped_doc
+		def postprocess(source, target):
+			# target.user = None
+			target.invoice = invoice_name
+			target.qty = 1.000
+			target.item_name = _("Opening Invoice Item")
+			target.customer_exists = True
+			target.party = self.get("customer")
+			target.customer = self.get("customer")
+			target.temporary_opening_account = self.get("temporary_opening_account")
+			target.due_date = self.get("due_date")
+			target.posting_date = self.get("posting_date")
+			target.inclusive_amount = True
+			target.grand_total = self.due_capital_balance
+
+		get_mapped_doc(self.doctype, self.name, {
+			self.doctype: {
+				"doctype": target_doctype,
+				"field_map": {
+					"due_capital_balance": "outstanding_amount",
+					"interest_rate": "comission_rate",
+					"interest_balance": "comission_amount",
+					"other_charges_balance": "additional_fee",
+					"name": "original_case_file",
+				}
+			}
+		}, doc, postprocess)
+
+		doc.flags.ignore_mandatory = True
+		doc.flags.ignore_permissions = True
+
+		doc.submit()
+		
 
 	def create_customer_if_not_exists(self):
 		party_doctype = "Customer"
@@ -294,8 +349,8 @@ class OriginalCaseFile(Document):
 			"is_opening": "No",
 			"set_posting_time": 1.000,
 			"company": self.get("company"),
-			"due_date": self.due_date,
-			"posting_date": self.posting_date,
+			"due_date": self.get("due_date"),
+			"posting_date": self.get("posting_date"),
 			"customer": self.get("customer"),
 			"doctype": "Sales Invoice",
 			"currency": frappe.db.get_value("Company", self.get("company"), "default_currency")

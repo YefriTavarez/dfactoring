@@ -9,7 +9,7 @@ from frappe.model.document import Document
 from frappe import db, _
 
 class CollectorPanel(Document):
-	def make_payment_entry(self, paid_amount, mode_of_payment, 
+	def make_payment_entry(self, paid_amount, mode_of_payment,
 		reference_no=None, reference_date=None):
 		error_msg = \
 			"Cannot create a Payment Entry for this Case File as it is not validated yet"

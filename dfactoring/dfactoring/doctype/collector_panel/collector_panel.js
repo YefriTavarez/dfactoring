@@ -4,6 +4,21 @@
 {% include "dfactoring/dfactoring/doctype/collector_panel/components/import.js" %}
 
 frappe.ui.form.on("Collector Panel", {
+	onload_post_render: frm => {
+		const record =
+			find_get_parameter("record");
+
+		if (record) {
+			const fieldname = "record";
+
+			frm.doc[fieldname] = record;
+
+			frappe.run_serially([
+				() => frappe.timeout(1.5),
+				() => frm.trigger(fieldname),
+			])
+		}
+	},
 	refresh: frm => {
 		frm.trigger("run_refresh_methods");
 	},

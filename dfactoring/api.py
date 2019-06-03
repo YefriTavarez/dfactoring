@@ -206,6 +206,8 @@ def get_case_records(case_file):
 		Where
 			`tabCase Record`.reference_type = "Case File"
 			And `tabCase Record`.reference_name = %s
+		Order By
+			`tabCase Record`.`creation` Desc
 	""", case_file, as_dict=True)
 
 @frappe.whitelist()
