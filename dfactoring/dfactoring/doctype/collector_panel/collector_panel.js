@@ -5,7 +5,7 @@
 
 frappe.ui.form.on("Collector Panel", {
 	onload_post_render: frm => {
-		const record =
+		const record = 
 			find_get_parameter("record");
 
 		if (record) {
@@ -267,6 +267,7 @@ $.extend(dfactoring.collector_panel, {
 			table = new LogTable(wrapper.element),
 			header = new LogHeader(table.element),
 			hrow = new LogRow(header.element),
+			h5 = new LogHeaderCell(hrow.element, __("Date")),
 			h1 = new LogHeaderCell(hrow.element, __("Activity Type")),
 			h2 = new LogHeaderCell(hrow.element, __("Activity Option")),
 			h3 = new LogHeaderCell(hrow.element, __("Notes")),
@@ -284,22 +285,30 @@ $.extend(dfactoring.collector_panel, {
 				if (message) {
 					this.render_log_table(message, body);
 				}
-			}
+			},
 		});
 	},
 	render_log_table: function(rows, body) {
 
 		$.map(rows, row => {
 			const {
+				transaction_date,
 				activity_type,
 				activity_option,
 				notes,
 				contact_mean,
+				next_contact_mean,
+				next_contact_date,
 			} = row,
+			{ format_date } = frappe,
 			body_row = new LogRow(body.element, event => {
 				frappe.msgprint(`
 					<h2>${__("Record Detail")}</h2>
 					<table class="table table-striped">
+					<tr>
+						<td><b>${ __("Contact Date") }</b></td>
+						<td>${format_date(transaction_date)}</td>
+					</tr>
 					<tr>
 						<td><b>${ __("Activity Type") }</b></td>
 						<td>${activity_type}</td>
@@ -316,8 +325,17 @@ $.extend(dfactoring.collector_panel, {
 						<td><b>${ __("Contact Mean") }</b></td>
 						<td>${contact_mean}</td>
 					</tr>
+					<tr>
+						<td><b>${ __("Next Contact Mean") }</b></td>
+						<td>${next_contact_mean}</td>
+					</tr>
+					<tr>
+						<td><b>${ __("Next Contact Date") }</b></td>
+						<td>${format_date(next_contact_date)}</td>
+					</tr>
 				</table>`, __("More Info"));
 			}),
+			transaction_date_cell = new LogBodyCell(body_row.element, format_date(transaction_date)),
 			activity_type_cell = new LogBodyCell(body_row.element, activity_type),
 			activity_option_cell = new LogBodyCell(body_row.element, activity_option),
 			notes_cell = new LogBodyCell(body_row.element, notes),

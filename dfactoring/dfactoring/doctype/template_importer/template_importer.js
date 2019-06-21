@@ -8,7 +8,8 @@ frappe.ui.form.on('Template Importer', {
 				"filters": {
 					"issingle": 0,
 					"istable": 0,
-					"name": ['in', frappe.boot.user.can_import]
+					// "name": ['in', frappe.boot.user.can_import]
+					"name": "Original Case File",
 				}
 			};
 		});
@@ -160,7 +161,11 @@ frappe.data_import.download_dialog = function(frm) {
 			"label": __("Select Columns"),
 			"fieldname": "select_columns",
 			"fieldtype": "Select",
-			"options": "All\nMandatory\nManually",
+			"options": [
+				{ label: __("All"), value: "All" },
+				{ label: __("Required"), value: "Mandatory" },
+				{ label: __("Manual ly"), value: "Manually" },
+			],
 			"reqd": 1,
 			"onchange": function() {
 				const fields = get_doctype_checkbox_fields();

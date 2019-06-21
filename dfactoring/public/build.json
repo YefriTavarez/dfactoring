@@ -1,0 +1,10 @@
+{
+	"dfactoring.css": [
+		"public/css/dfactoring.css",
+		"public/css/timepicker.css"
+	],
+	"dfactoring.js": [
+		"public/js/dfactoring.js",
+		"public/js/timepicker.js"
+	]
+}

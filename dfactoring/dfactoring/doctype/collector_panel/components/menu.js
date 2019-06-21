@@ -76,6 +76,13 @@ class Menu {
 			];
 
 		if (isempty(rows)) {
+			const msg = `<center>
+				${__("No pending tasks")}
+			</center>`;
+
+			get(prompt.get_parent_table())
+				.html(msg);
+
 			return false;
 		}
 

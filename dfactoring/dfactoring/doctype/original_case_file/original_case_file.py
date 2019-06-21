@@ -49,7 +49,9 @@ class OriginalCaseFile(Document):
 		invoices_summary = {}
 		max_count = {}
 		fields = [
-			"company", "count(name) as total_invoices", "sum(outstanding_amount) as outstanding_amount"
+			"company",
+			"count(name) as total_invoices",
+			"sum(outstanding_amount) as outstanding_amount",
 		]
 		companies = frappe.get_all("Company", fields=["name as company", "default_currency as currency"])
 		if not companies:
@@ -85,20 +87,26 @@ class OriginalCaseFile(Document):
 		doc = frappe.new_doc(invoice_doctype)
 
 		if db.exists(invoice_doctype, invoice_filters):
-			olddoc = frappe.get_doc(invoice_doctype, 
+			olddoc = frappe.get_doc(invoice_doctype,
 				invoice_filters)
-			
+
 			olddoc.flags.ignore_mandatory = True
 			olddoc.flags.ignore_permissions = True
 
-			olddoc.cancel()
+			remove_refs(olddoc)
+
+			olddoc.due_date = olddoc.posting_date
+			olddoc.set_posting_time = True
+
 			doc = frappe.copy_doc(olddoc)
-			
+
+			olddoc.cancel()
+
 			doc.docstatus = 0
 			doc.status = "Draft"
-			
+
 			doc.set_docstatus()
-			
+
 			doc.amended_from = olddoc.name
 
 			doc.__islocal = True
@@ -127,7 +135,17 @@ class OriginalCaseFile(Document):
 
 		doc.flags.ignore_mandatory = True
 		doc.flags.ignore_permissions = True
-		
+
+		doc.due_date = doc.posting_date = nowdate()
+		doc.set_posting_time = True
+
+		# doc.db_update()
+		# for d in doc.get_all_children():
+		# 	d.parent = doc.name
+		# 	d.db_update()
+
+		# doc.save()
+
 		doc.submit()
 
 		return doc.name
@@ -144,7 +162,7 @@ class OriginalCaseFile(Document):
 	def create_or_update_case_file(self, invoice_name):
 		if self.is_new():
 			return False
-		
+
 		case_file_filters = {
 			"original_case_file": self.name,
 			"docstatus": ["=", "1"],
@@ -154,21 +172,21 @@ class OriginalCaseFile(Document):
 
 		doc = frappe.new_doc(target_doctype)
 
-		if db.exists(target_doctype, 
+		if db.exists(target_doctype,
 			case_file_filters):
-			olddoc = frappe.get_doc(target_doctype, 
+			olddoc = frappe.get_doc(target_doctype,
 				case_file_filters)
-			
+
 			olddoc.flags.ignore_mandatory = True
 			olddoc.flags.ignore_permissions = True
 
 			olddoc.cancel()
 			doc = frappe.copy_doc(olddoc)
-			
+
 			doc.docstatus = 0
-			
+
 			doc.set_docstatus()
-			
+
 			doc.amended_from = olddoc.name
 
 			doc.__islocal = True
@@ -205,7 +223,7 @@ class OriginalCaseFile(Document):
 		doc.flags.ignore_permissions = True
 
 		doc.submit()
-		
+
 
 	def create_customer_if_not_exists(self):
 		party_doctype = "Customer"
@@ -216,7 +234,7 @@ class OriginalCaseFile(Document):
 
 		doc = frappe.new_doc(party_doctype)
 
-		if db.exists(party_doctype, filters): 
+		if db.exists(party_doctype, filters):
 			doc = frappe.get_doc(party_doctype, filters)
 
 		doc.update({
@@ -273,7 +291,7 @@ class OriginalCaseFile(Document):
 
 	def add_customer_numbers(self, doc):
 		from frappe import unscrub
-	
+
 		phone_map = {
 			"mobile_1": self.get("mobile_1"),
 			"mobile_2": self.get("mobile_2"),
@@ -349,7 +367,9 @@ class OriginalCaseFile(Document):
 			"is_opening": "No",
 			"set_posting_time": 1.000,
 			"company": self.get("company"),
-			"due_date": self.get("due_date"),
+			"due_date": self.get("posting_date") \
+				if self.get("due_date") < self.get("posting_date") \
+					else self.get("due_date"),
 			"posting_date": self.get("posting_date"),
 			"customer": self.get("customer"),
 			"doctype": "Sales Invoice",
@@ -369,7 +389,8 @@ def get_temporary_opening_account(company=None):
 	accounts = frappe.get_all("Account", filters={
 		'company': company,
 		'account_type': 'Temporary',
-		'account_currency': db.get_value("Company", company, "default_currency")
+		'account_currency': db.get_value("Company", 
+			company, "default_currency")
 	})
 
 	if not accounts:
@@ -382,10 +403,21 @@ def get_temporary_opening_account(company=None):
 		accounts = frappe.get_all("Account", filters={
 			'company': company,
 			'account_type': 'Income Account',
-			'account_currency': db.get_value("Company", company, "default_currency"),
+			'account_currency': db.get_value("Company", 
+				company, "default_currency"),
 		})
 
 	if not accounts:
 		frappe.throw(_("Please add a Temporary Opening account in Chart of Accounts"))
 
 	return accounts[0].name
+
+
+def remove_refs(doc):
+	d = frappe.get_doc("Case File", {
+		"invoice": doc.name,
+		"docstatus": ["<", "2"]
+	})
+
+	d.invoice = ""
+	d.db_update()

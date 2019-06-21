@@ -2,7 +2,16 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Sales Invoice", {
-	generate_bill_number: frm => {
+	onload_post_render: frm => {
+        $(cur_frm.fields_dict.posting_time.$input)
+            .attr("readonly", "readonly")
+            .mdtimepicker()
+            .on('timechanged', function(e){
+          // console.log(e.value);
+          frm.doc["posting_time"] = e.time;
+        });
+    },
+    generate_bill_number: frm => {
         const { doc } = frm;
         
         if (doc.bill_no) {

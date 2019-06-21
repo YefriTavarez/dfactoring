@@ -197,10 +197,13 @@ def get_case_records(case_file):
 
 	return db.sql("""
 		Select
+			`tabCase Record`.transaction_date,
 			`tabCase Record`.activity_type,
 			`tabCase Record`.activity_option,
 			`tabCase Record`.notes,
-			`tabCase Record`.contact_mean
+			`tabCase Record`.contact_mean,
+			`tabCase Record`.next_contact_mean,
+			`tabCase Record`.next_contact_date
 		From
 			`tabCase Record`
 		Where
